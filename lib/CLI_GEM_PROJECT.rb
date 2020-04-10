@@ -1,0 +1,6 @@
+require "open-uri"
+require "nokogiri"
+require "pry"
+require_relative "./CLI_GEM_PROJECT/version"
+require_relative "./CLI_GEM_PROJECT/cli"
+require_relative "./CLI_GEM_PROJECT/recipe"
