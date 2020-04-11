@@ -6,7 +6,7 @@ class Recipes
       list_recipes
       menu
       goodbye
-      Recipe.create_recipe("https://www.allrecipes.com/recipe/264444/grilled-mediterranean-salmon-in-foil/?internalSource=staff%20pick&referringId=16704&referringContentType=Recipe%20Hub")
+      Recipe.return_recipe("https://www.simplyrecipes.com/recipes/homemade_pizza/")
     end
 
 
