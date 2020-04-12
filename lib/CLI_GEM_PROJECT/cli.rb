@@ -5,37 +5,34 @@ class Recipes
       puts "Welcome to the Recipe Commander!"
       list_recipes
       menu
-      goodbye
-      Recipe.return_recipe("https://www.simplyrecipes.com/recipes/homemade_pizza/")
     end
 
 
 
     def list_recipes
-        puts "1. vegan recipe"
-        puts "2. vegetarian recipe"
-        puts "3. mediterran recipe"
+        puts "1. print all recipe diet categories"
+        puts "2. show all recipe objects"
+        puts "3. print a random recipe"
     end
  
     def menu
         input = nil
         while input != "exit"
-            puts "Enter the number of the recipe you'd like to discover, type list if you want to return to the list or type exit"
+            puts "Enter a number or type exit"
             input = gets.strip.downcase
             case input
             when "1"
-            puts "more info on 1.."
+            Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/").each {|recipe| p recipe.diet}
             when "2"
-            puts "more info on 2.."
+            puts Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/")
             when "3"
-            puts "more info on 3.."
-            when "list"
+            random = rand(0..17)
+            p Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/")[random]
+            when "return"
             list_recipes
             end
         end
     end
 
-    def goodbye
-        puts "See ya"
-    end
+
 end 
