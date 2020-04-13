@@ -6,8 +6,8 @@ class Scraper
         recipe.name = doc.css(".entry-title").text.strip
         recipe.cook_time = doc.css(".cooktime").text.strip
         recipe.diet = doc.css(".taxonomy-term.button-action span").select {|sp| sp.text == "Gluten-Free" || sp.text == "Vegetarian"}.collect {|el| el.text.downcase}.uniq.join(",")
-        recipe.ingredients = doc.css(".ingredient").text.strip
-        recipe.directions = doc.css(".entry-details.recipe-method.instructions div p").collect {|p| p.text.strip}
+        recipe.ingredients = doc.css(".ingredient").collect {|ingredient| ingredient.text.strip}.reject {|el| el.empty?}
+        recipe.directions = doc.css(".entry-details.recipe-method.instructions div p").collect {|p| p.text.strip}.reject {|el| el.empty?}
         recipe.url = "#{link}"
         recipe
     end

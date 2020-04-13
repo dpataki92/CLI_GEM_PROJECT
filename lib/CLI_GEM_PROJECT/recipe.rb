@@ -34,7 +34,11 @@ class Recipe
     end
 
     def self.print_list(list_return)
+        if list_return.class == Array
+            list_return.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+        else
         method(list_return).call.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+        end
     end
 
     def self.find_by_diet(list_return)
@@ -42,10 +46,35 @@ class Recipe
         puts "Type 'g' if you are only interested in the gluten-free dishes"
         input = gets.strip.downcase
         if input == "v"
-            method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+            method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}
         elsif input == "g"
-            method(list_return).call.select {|dish| dish.diet.include?("gluten-free")}.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+            method(list_return).call.select {|dish| dish.diet.include?("gluten-free")}
         end
+    end
+
+    def self.format_recipe(obj)
+        puts ""
+        puts "*** #{obj.name} ***"
+        puts ""
+        puts "Average cook time is: #{obj.cook_time}"
+        puts "Categories: #{obj.diet}" if obj.diet
+        puts ""
+        puts "INGREDIENTS:"
+        obj.ingredients.each {|ing| puts "- #{ing}"}
+        puts ""
+        puts "DIRECTIONS:"
+        obj.directions.each {|dir| puts "- #{dir}"}
+        puts ""
+        puts "If you want to know more, check out this: #{obj.url}"
+        puts ""
+        puts "Bon Appetit!"
+        puts ""
+    end
+
+    def self.return_recipe(arr)
+        puts "Select a meal by number"
+        input = gets.strip
+        self.format_recipe(arr[input.to_i - 1])
     end
 
 end
