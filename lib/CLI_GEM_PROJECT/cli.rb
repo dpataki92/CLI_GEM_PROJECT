@@ -25,12 +25,16 @@ class Recipes
             case input
             when "1"
             Recipe.print_list(:return_all)
+            Recipe.find_by_diet(:return_all)
             when "2"
             Recipe.print_list(:all_breakfast)
+            Recipe.find_by_diet(:all_breakfast)
             when "3"
             Recipe.print_list(:all_lunch)
+            Recipe.find_by_diet(:all_lunch)
             when "4"
             Recipe.print_list(:all_dinner)
+            Recipe.find_by_diet(:all_lunch)
             when "menu"
             list_options
             end

@@ -37,6 +37,15 @@ class Recipe
         method(list_return).call.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
     end
 
-
+    def self.find_by_diet(list_return)
+        puts "Type 'v' if you are only interested in the vegetarian dishes"
+        puts "Type 'g' if you are only interested in the gluten-free dishes"
+        input = gets.strip.downcase
+        if input == "v"
+            method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+        elsif input == "g"
+            method(list_return).call.select {|dish| dish.diet.include?("gluten-free")}.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
+        end
+    end
 
 end
