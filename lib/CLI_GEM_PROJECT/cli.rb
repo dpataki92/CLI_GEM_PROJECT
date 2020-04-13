@@ -2,17 +2,19 @@
 class Recipes
     #controller method
     def call
+      Recipe.save_all
       puts "Welcome to the Recipe Commander!"
-      list_recipes
+      list_options
       menu
     end
 
 
 
-    def list_recipes
-        puts "1. print all recipe diet categories"
-        puts "2. show all recipe objects"
-        puts "3. print a random recipe"
+    def list_options
+        puts "1. show me all the recipes"
+        puts "2. just the breakfast"
+        puts "3. just the lunch"
+        puts "4. just the dinner"
     end
  
     def menu
@@ -22,14 +24,15 @@ class Recipes
             input = gets.strip.downcase
             case input
             when "1"
-            Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/").each {|recipe| p recipe.diet}
+            Recipe.print_list(:return_all)
             when "2"
-            puts Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/")
+            Recipe.print_list(:all_breakfast)
             when "3"
-            random = rand(0..17)
-            p Recipe.create_multiple_recipes("https://www.simplyrecipes.com/recipes/course/dinner/")[random]
-            when "return"
-            list_recipes
+            Recipe.print_list(:all_lunch)
+            when "4"
+            Recipe.print_list(:all_dinner)
+            when "menu"
+            list_options
             end
         end
     end
