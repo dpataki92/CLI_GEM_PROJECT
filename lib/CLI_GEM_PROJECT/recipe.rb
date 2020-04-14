@@ -1,4 +1,5 @@
 class Recipe
+
     attr_accessor :name, :diet, :cook_time, :ingredients, :directions, :url
 
     @@all = {
@@ -6,11 +7,19 @@ class Recipe
         lunch: nil,
         dinner: nil
     }
+    
+    class CreateAsync
+        include Concurrent::Async
+        def save_all
+            Recipe.all[:breakfast] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/breakfast_and_brunch/")
+            Recipe.all[:lunch] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/lunch/")
+            Recipe.all[:dinner] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/dinner/")
+        end
 
-    def self.save_all
-        @@all[:breakfast] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/breakfast_and_brunch/")
-        @@all[:lunch] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/lunch/")
-        @@all[:dinner] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/dinner/")
+        def options_and_menu
+            CLI.list_options
+            CLI.menu
+        end
     end
 
     def self.all
@@ -91,7 +100,7 @@ class Recipe
         puts "I. Type the number of the recipe you want to check out!"
         puts "II. Type 'v' if you want to see only the vegetarian options!"
         puts "III. Type 'g' if you want to see only the gluten-free options!"
-        puts "IV. Type 'r' if you want to return to the menu!"
+        puts "IV. Type 'm' if you want to return to the menu!"
         
         input = gets.strip
         recipe = nil
@@ -100,9 +109,9 @@ class Recipe
             diet_filter = Recipe.find_by_diet(course_list, input)
             Recipe.print_list(diet_filter)
             puts "I. Type the number of the recipe you want to check out!"
-            puts "II. Type the 'r' if you want to return to the menu!"
+            puts "II. Type the 'm' if you want to return to the menu!"
             answer = gets.strip
-            if answer == "r"
+            if answer == "m"
                 CLI.list_options
             else
                 recipe = diet_filter[answer.to_i-1]
@@ -111,14 +120,14 @@ class Recipe
         elsif input.count("a-z") == 0 && input.to_i <= course_list.length
             recipe = course_list[input.to_i-1] 
             Recipe.return_recipe(course_list, input)
-        elsif input == "r"
+        elsif input == "m"
             CLI.list_options
         else
             puts "Please provide a valid input => (i) number from the list (ii) 'v' (iii) 'g' or (iv) 'r'"
         end
 
         if recipe
-            self.save_or_return(recipe)
+            self.save_or_return(recipe, course_list)
         end
             
     end
@@ -127,15 +136,17 @@ class Recipe
         User.favorites
     end
 
-    def self.save_or_return(recipe)
+    def self.save_or_return(recipe, list)
         puts "Did you like this recipe? Type 'save' to save it to your favorites!"
-        puts "Do you want to return to the list?"
-        puts "Do you want to return to the menu? Type 'r'!"
+        puts "Do you want to return to the list? Type 'r'!"
+        puts "Do you want to go back to the menu? Type 'm'!"
         response = gets.strip
         if response == "save"
             User.save_favorite(recipe)
             puts "It is saved!"
         elsif response == "r"
+            self.select_recipe(list)
+        elsif response == "m"
             CLI.list_options
         else
             puts "Please type valid input"
@@ -146,7 +157,7 @@ class Recipe
         arr = self.return_all
         i = rand(0...arr.length)
         self.format_recipe(arr[i])
-        self.save_or_return(arr[i])
+        self.save_or_return(arr[i], arr)
     end
 
     def self.menu_of_the_day

@@ -2,23 +2,53 @@
 class CLI
     #controller method
     def self.call
-      puts "Welcome to the Recipe Commander!"
-      puts "Here you can check out our most popular simple breakfast, lunch and dinner recipes, search for vegetarian and gluten-free options or generate your meal of the day or menu of the day!"
-      self.list_options
-      Recipe.save_all
-      self.menu
+      async_await = Recipe::CreateAsync.new
+      async_await.async.save_all
+      self.greeting
+      async_await.await.options_and_menu
+      puts "Thanks for using SimpleMeal!"
+    end
+
+    def self.greeting
+        puts "******************************"
+        puts "WELCOME TO THE SIMPLEMEAL CLI!"
+        puts "******************************"
+        puts ""
+
+        puts "What's your name?"
+        name = gets.strip
+        puts ""
+        puts "Hello #{name}! By using SimpleMeal, you can:"
+        puts "  -check out our most popular breakfast, lunch and dinner recipes"
+        puts "  -search for vegetarian and gluten-free options"
+        puts "  -ask us to recommend you a meal or even a full menu for the day"
+        puts "  -save your favorite recipes and get back to them later once you have finished searching"
+        puts ""
+        puts "Press 'y' if you are ready!"
+        input = gets.strip.downcase
+        if input == 'y'
+            puts ""
+            puts "Cool! We are getting you the most popular recipes on #{Time.new.strftime("%d of %B, %Y")}"
+            puts ""
+            puts "It may take a few seconds...."
+            puts ""
+        else
+            puts ""
+            puts "Maybe next time! Now just type 'exit'!"
+            puts ""
+        end
     end
 
 
 
     def self.list_options
-        puts "1. show me all the recipes"
-        puts "2. just the breakfast"
-        puts "3. just the lunch"
-        puts "4. just the dinner"
-        puts "5. show me my favorites"
-        puts "6. give me the meal of the day"
-        puts "7. give me the menu of the day"
+        puts "1. All recipes"
+        puts "2. Breakfast recipes"
+        puts "3. Lunch recipes"
+        puts "4. Dinner recipes"
+        puts "5. Favorites"
+        puts "6. Meal of the day"
+        puts "7. Menu of the day"
     end
  
     def self.menu
