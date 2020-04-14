@@ -108,6 +108,7 @@ class Recipe
         if input == "v" || input == "g"
             diet_filter = Recipe.find_by_diet(course_list, input)
             Recipe.print_list(diet_filter)
+            puts ""
             puts "I. Type the number of the recipe you want to check out!"
             puts "II. Type the 'm' if you want to return to the menu!"
             answer = gets.strip
@@ -123,7 +124,11 @@ class Recipe
         elsif input == "m"
             CLI.list_options
         else
-            puts "Please provide a valid input => (i) number from the list (ii) 'v' (iii) 'g' or (iv) 'r'"
+            puts ""
+            puts "Please provide a valid input!"
+            puts ""
+            sleep(2)
+            self.select_recipe(course_list)
         end
 
         if recipe
