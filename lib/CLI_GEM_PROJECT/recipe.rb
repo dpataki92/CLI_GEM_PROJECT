@@ -95,7 +95,11 @@ class Recipe
 
     def self.select_recipe(course_list)
         course_list = method(course_list).call if !course_list.instance_of? Array
-        Recipe.print_list(course_list)
+        self.print_list(course_list)
+        self.filter_or_return(course_list)
+    end
+    
+    def self.filter_or_return(course_list)
         puts ""
         puts "I. Type the number of the recipe you want to check out!"
         puts "II. Type 'v' if you want to see only the vegetarian options!"
@@ -107,7 +111,15 @@ class Recipe
 
         if input == "v" || input == "g"
             diet_filter = Recipe.find_by_diet(course_list, input)
-            Recipe.print_list(diet_filter)
+            if diet_filter.empty?
+                puts ""
+                puts "Sorry, this list does not contain any meals from the selected category :("
+                sleep(2)
+                self.filter_or_return(course_list)
+            else
+                Recipe.print_list(diet_filter)
+            end
+
             puts ""
             puts "I. Type the number of the recipe you want to check out!"
             puts "II. Type the 'm' if you want to return to the menu!"
@@ -126,7 +138,6 @@ class Recipe
         else
             puts ""
             puts "Please provide a valid input!"
-            puts ""
             sleep(2)
             self.select_recipe(course_list)
         end
@@ -134,9 +145,8 @@ class Recipe
         if recipe
             self.save_or_return(recipe, course_list)
         end
-            
     end
-    
+
     def self.favorites
         User.favorites
     end
@@ -149,12 +159,18 @@ class Recipe
         if response == "save"
             User.save_favorite(recipe)
             puts "It is saved!"
+            puts ""
+            sleep(2)
+            self.select_recipe(list)
         elsif response == "r"
             self.select_recipe(list)
         elsif response == "m"
             CLI.list_options
         else
-            puts "Please type valid input"
+            puts ""
+            puts "Please type valid input!"
+            sleep(2)
+            self.select_recipe(list)
         end
     end
 

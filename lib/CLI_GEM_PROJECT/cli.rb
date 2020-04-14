@@ -9,16 +9,16 @@ class CLI
       puts "Thanks for using SimpleMeal!"
     end
 
+    # greets user, saves name and provides summary
     def self.greeting
         puts "******************************"
         puts "WELCOME TO THE SIMPLEMEAL CLI!"
         puts "******************************"
         puts ""
-
         puts "What's your name?"
-        name = gets.strip
+        User.name = gets.strip
         puts ""
-        puts "Hello #{name}! By using SimpleMeal, you can:"
+        puts "Hello #{User.name}! By using SimpleMeal, you can:"
         puts "  -check out our most popular breakfast, lunch and dinner recipes"
         puts "  -search for vegetarian and gluten-free options"
         puts "  -ask us to recommend you a meal or even a full menu for the day"
@@ -67,7 +67,7 @@ class CLI
             Recipe.select_recipe(:all_dinner)
             when "5"
                 if User.favorites.empty?
-                    puts "You have not saved any recipe so far!"
+                    puts "Sorry #{User.name}, you have not saved any recipe so far!"
                 else
                     Recipe.select_recipe(:favorites)
                 end

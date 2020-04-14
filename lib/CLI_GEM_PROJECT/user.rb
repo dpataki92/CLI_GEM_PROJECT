@@ -1,17 +1,18 @@
 class User
-@@all = []
+   @name = ""
+   @favorites = []
+   
+   class << self
+      attr_accessor :name, :favorites
+   end
 
- def self.save_favorite(obj)
-    @@all << obj if !@@all.include?(obj)
- end
+   def self.save_favorite(obj)
+      self.favorites << obj if !self.favorites.include?(obj)
+   end
 
- def self.favorites
-    @@all
- end
-
- def self.clear_favorites
-    @@all.clear
- end
+   def self.clear_favorites
+      self.favorites.clear
+   end
 
 
 end
