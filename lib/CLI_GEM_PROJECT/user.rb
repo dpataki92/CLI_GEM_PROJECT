@@ -1,6 +1,5 @@
 class User
 @@all = []
-@@name = nil
 
  def self.save_favorite(obj)
     @@all << obj if !@@all.include?(obj)

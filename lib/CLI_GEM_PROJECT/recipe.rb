@@ -42,10 +42,18 @@ class Recipe
     end
 
     def self.find_by_diet(list_return, input)
-        if input == "v"
-            method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}
-        elsif input == "g"
-            method(list_return).call.select {|dish| dish.diet.include?("gluten-free")}
+        if list_return.instance_of? Array
+            if input == "v"
+                list_return.select {|dish| dish.diet.include?("vegetarian")}
+            elsif input == "g"
+                list_return.select {|dish| dish.diet.include?("gluten-free")}
+            end
+        else
+            if input == "v"
+                method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}
+            elsif input == "g"
+                method(list_return).call.select {|dish| dish.diet.include?("gluten-free")}
+            end
         end
     end
 
@@ -77,6 +85,7 @@ class Recipe
     end
 
     def self.select_recipe(course_list)
+        course_list = method(course_list).call if !course_list.instance_of? Array
         Recipe.print_list(course_list)
         puts ""
         puts "I. Type the number of the recipe you want to check out!"
@@ -99,8 +108,8 @@ class Recipe
                 recipe = diet_filter[answer.to_i-1]
                 Recipe.return_recipe(diet_filter, answer)
             end
-        elsif input.count("a-z") == 0 && input.to_i <= method(course_list).call.length
-            recipe = method(course_list).call[input.to_i-1]
+        elsif input.count("a-z") == 0 && input.to_i <= course_list.length
+            recipe = course_list[input.to_i-1] 
             Recipe.return_recipe(course_list, input)
         elsif input == "r"
             CLI.list_options
@@ -109,17 +118,7 @@ class Recipe
         end
 
         if recipe
-            puts "Did you like this recipe? Type 'save' to save it to your favorites!"
-            puts "Do you want to return to the menu? Type 'r'!"
-            response = gets.strip
-            if response == "save"
-                User.save_favorite(recipe)
-                puts "It is saved!"
-            elsif response == "r"
-                CLI.list_options
-            else
-                puts "Please type valid input"
-            end
+            self.save_or_return(recipe)
         end
             
     end
@@ -128,22 +127,26 @@ class Recipe
         User.favorites
     end
 
+    def self.save_or_return(recipe)
+        puts "Did you like this recipe? Type 'save' to save it to your favorites!"
+        puts "Do you want to return to the list?"
+        puts "Do you want to return to the menu? Type 'r'!"
+        response = gets.strip
+        if response == "save"
+            User.save_favorite(recipe)
+            puts "It is saved!"
+        elsif response == "r"
+            CLI.list_options
+        else
+            puts "Please type valid input"
+        end
+    end
+
     def self.meal_of_the_day
         arr = self.return_all
         i = rand(0...arr.length)
         self.format_recipe(arr[i])
-
-        puts "Did you like this recipe? Type 'save' to save it to your favorites!"
-        puts "Do you want to return to the menu? Type 'r'!"
-            response = gets.strip
-            if response == "save"
-                User.save_favorite(arr[i])
-                puts "It is saved!"
-            elsif response == "r"
-                CLI.list_options
-            else
-                puts "Please type valid input"
-            end
+        self.save_or_return(arr[i])
     end
 
     def self.menu_of_the_day
@@ -155,5 +158,7 @@ class Recipe
 
         self.select_recipe(menu)
     end
+
+
 
 end
