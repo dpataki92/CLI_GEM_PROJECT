@@ -34,17 +34,14 @@ class Recipe
     end
 
     def self.print_list(list_return)
-        if list_return.class == Array
+        if list_return.instance_of? Array
             list_return.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
         else
         method(list_return).call.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
         end
     end
 
-    def self.find_by_diet(list_return)
-        puts "Type 'v' if you are only interested in the vegetarian dishes"
-        puts "Type 'g' if you are only interested in the gluten-free dishes"
-        input = gets.strip.downcase
+    def self.find_by_diet(list_return, input)
         if input == "v"
             method(list_return).call.select {|dish| dish.diet.include?("vegetarian")}
         elsif input == "g"
@@ -71,10 +68,39 @@ class Recipe
         puts ""
     end
 
-    def self.return_recipe(arr)
-        puts "Select a meal by number"
-        input = gets.strip
-        self.format_recipe(arr[input.to_i - 1])
+    def self.return_recipe(list_return, input)
+        if list_return.instance_of? Array
+            self.format_recipe(list_return[input.to_i - 1])
+        else
+            self.format_recipe(method(list_return).call[input.to_i - 1])
+        end
     end
+
+    def self.select_recipe(course_list)
+        Recipe.print_list(course_list)
+        puts ""
+        puts "I. Type the number of the recipe you want to check out!"
+        puts "II. Type 'v' if you want to see only the vegetarian options!"
+        puts "III. Type 'g' if you want to see only the gluten-free options!"
+        puts "IV. Type 'r' if you want to return to the menu!"
+        
+        input = gets.strip
+
+        if input == "v" || input == "g"
+            diet_filter = Recipe.find_by_diet(course_list, input)
+            Recipe.print_list(diet_filter)
+            puts "I. Type the number of the recipe you want to check out!"
+            puts "II. Type the 'r' if you want to return to the menu!"
+            answer = gets.strip
+            answer == "r" ? CLI.list_options : Recipe.return_recipe(diet_filter, answer)
+        elsif input.count("a-z") == 0 && input.to_i <= method(course_list).call.length
+            Recipe.return_recipe(course_list, input)
+        elsif input == "r"
+            CLI.list_options
+        else
+            puts "Please provide a valid input => (i) number from the list (ii) 'v' (iii) 'g' or (iv) 'r'"
+        end
+    end
+
 
 end

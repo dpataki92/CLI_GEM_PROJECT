@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 require "./lib/CLI_GEM_PROJECT.rb"
-Recipes.new.call
+CLI.call
