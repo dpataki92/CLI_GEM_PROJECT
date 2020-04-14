@@ -17,6 +17,8 @@ class CLI
         puts "3. just the lunch"
         puts "4. just the dinner"
         puts "5. show me my favorites"
+        puts "6. give me the meal of the day"
+        puts "7. give me the menu of the day"
     end
  
     def self.menu
@@ -33,8 +35,16 @@ class CLI
             Recipe.select_recipe(:all_lunch)
             when "4"
             Recipe.select_recipe(:all_dinner)
-            when "menu"
-            list_options
+            when "5"
+                if User.favorites.empty?
+                    puts "You have not saved any recipe so far!"
+                else
+                    Recipe.select_recipe(:favorites)
+                end
+            when "6"
+                Recipe.meal_of_the_day
+            when "7"
+                Recipe.menu_of_the_day
             end
         end
     end

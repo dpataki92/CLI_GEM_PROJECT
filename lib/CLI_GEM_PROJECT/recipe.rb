@@ -85,6 +85,7 @@ class Recipe
         puts "IV. Type 'r' if you want to return to the menu!"
         
         input = gets.strip
+        recipe = nil
 
         if input == "v" || input == "g"
             diet_filter = Recipe.find_by_diet(course_list, input)
@@ -92,15 +93,67 @@ class Recipe
             puts "I. Type the number of the recipe you want to check out!"
             puts "II. Type the 'r' if you want to return to the menu!"
             answer = gets.strip
-            answer == "r" ? CLI.list_options : Recipe.return_recipe(diet_filter, answer)
+            if answer == "r"
+                CLI.list_options
+            else
+                recipe = diet_filter[answer.to_i-1]
+                Recipe.return_recipe(diet_filter, answer)
+            end
         elsif input.count("a-z") == 0 && input.to_i <= method(course_list).call.length
+            recipe = method(course_list).call[input.to_i-1]
             Recipe.return_recipe(course_list, input)
         elsif input == "r"
             CLI.list_options
         else
             puts "Please provide a valid input => (i) number from the list (ii) 'v' (iii) 'g' or (iv) 'r'"
         end
+
+        if recipe
+            puts "Did you like this recipe? Type 'save' to save it to your favorites!"
+            puts "Do you want to return to the menu? Type 'r'!"
+            response = gets.strip
+            if response == "save"
+                User.save_favorite(recipe)
+                puts "It is saved!"
+            elsif response == "r"
+                CLI.list_options
+            else
+                puts "Please type valid input"
+            end
+        end
+            
+    end
+    
+    def self.favorites
+        User.favorites
     end
 
+    def self.meal_of_the_day
+        arr = self.return_all
+        i = rand(0...arr.length)
+        self.format_recipe(arr[i])
+
+        puts "Did you like this recipe? Type 'save' to save it to your favorites!"
+        puts "Do you want to return to the menu? Type 'r'!"
+            response = gets.strip
+            if response == "save"
+                User.save_favorite(arr[i])
+                puts "It is saved!"
+            elsif response == "r"
+                CLI.list_options
+            else
+                puts "Please type valid input"
+            end
+    end
+
+    def self.menu_of_the_day
+        breakfast = self.all[:breakfast][rand(0...self.all[:breakfast].length)]
+        lunch = self.all[:lunch][rand(0...self.all[:lunch].length)]
+        dinner = self.all[:dinner][rand(0...self.all[:dinner].length)]
+
+        menu = [breakfast, lunch, dinner]
+
+        self.select_recipe(menu)
+    end
 
 end
