@@ -96,10 +96,10 @@ class Recipe
     def self.select_recipe(course_list)
         course_list = method(course_list).call if !course_list.instance_of? Array
         self.print_list(course_list)
-        self.filter_or_return(course_list)
+        self.filter_and_select(course_list)
     end
     
-    def self.filter_or_return(course_list)
+    def self.filter_and_select(course_list)
         puts ""
         puts "I. Type the number of the recipe you want to check out!"
         puts "II. Type 'v' if you want to see only the vegetarian options!"
@@ -110,26 +110,7 @@ class Recipe
         recipe = nil
 
         if input == "v" || input == "g"
-            diet_filter = Recipe.find_by_diet(course_list, input)
-            if diet_filter.empty?
-                puts ""
-                puts "Sorry, this list does not contain any meals from the selected category :("
-                sleep(2)
-                self.filter_or_return(course_list)
-            else
-                Recipe.print_list(diet_filter)
-            end
-
-            puts ""
-            puts "I. Type the number of the recipe you want to check out!"
-            puts "II. Type the 'm' if you want to return to the menu!"
-            answer = gets.strip
-            if answer == "m"
-                CLI.list_options
-            else
-                recipe = diet_filter[answer.to_i-1]
-                Recipe.return_recipe(diet_filter, answer)
-            end
+            self.select_from_filtered_list(course_list, input)
         elsif input.count("a-z") == 0 && input.to_i <= course_list.length
             recipe = course_list[input.to_i-1] 
             Recipe.return_recipe(course_list, input)
@@ -144,6 +125,34 @@ class Recipe
 
         if recipe
             self.save_or_return(recipe, course_list)
+        end
+    end
+
+    def self.select_from_filtered_list(course_list, input)
+        diet_filter = Recipe.find_by_diet(course_list, input)
+            if diet_filter.empty?
+                puts ""
+                puts "Sorry, this list does not contain any meals from the selected category :("
+                sleep(2)
+                self.filter_and_select(course_list)
+            else
+                Recipe.print_list(diet_filter)
+            end
+
+        puts ""
+        puts "I. Type the number of the recipe you want to check out!"
+        puts "II. Type the 'm' if you want to return to the menu!"
+        response = gets.strip
+        if response == "m"
+            CLI.list_options
+        elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
+            Recipe.return_recipe(diet_filter, response)
+            Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
+        else
+            puts ""
+            puts "Please provide valid input!"
+            sleep(2)
+            self.select_from_filtered_list(course_list, input)
         end
     end
 
