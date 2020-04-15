@@ -6,6 +6,7 @@ class CLI
       async_await.async.save_all
       self.greeting
       async_await.await.options_and_menu
+      puts ""
       puts "Thanks for using SimpleMeal!"
     end
 
@@ -54,7 +55,8 @@ class CLI
     def self.menu
         input = nil
         while input != "exit"
-            puts "Enter a number or type exit"
+            puts ""
+            puts "Enter a number or type exit!"
             input = gets.strip.downcase
             case input
             when "1"
@@ -66,15 +68,11 @@ class CLI
             when "4"
             Recipe.select_recipe(:all_dinner)
             when "5"
-                if User.favorites.empty?
-                    puts "Sorry #{User.name}, you have not saved any recipe so far!"
-                else
-                    Recipe.select_recipe(:favorites)
-                end
+            User.access_favorites
             when "6"
-                Recipe.meal_of_the_day
+            Recipe.meal_of_the_day
             when "7"
-                Recipe.menu_of_the_day
+            Recipe.menu_of_the_day
             end
         end
     end
