@@ -192,6 +192,8 @@ class Recipe
 
         menu = [breakfast, lunch, dinner]
 
+        puts ""
+        puts "Here is your menu for the day! Try out all of them!"
         self.select_recipe(menu)
     end
 

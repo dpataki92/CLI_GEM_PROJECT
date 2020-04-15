@@ -75,7 +75,7 @@ class CLI
         input = nil
         while input != "exit"
             puts ""
-            puts "Enter a number or type exit!"
+            puts "Enter a number from the menu or type exit!"
             input = gets.strip.downcase
             case input
             when "1"
@@ -92,6 +92,10 @@ class CLI
             Recipe.meal_of_the_day
             when "7"
             Recipe.menu_of_the_day
+            else
+            puts ""
+            puts "Please provide valid input!"
+            puts ""
             end
         end
     end

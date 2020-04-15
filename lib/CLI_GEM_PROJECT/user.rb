@@ -23,7 +23,8 @@ class User
 
       if response == "clear"
          User.favorites.clear
-         puts "You have no meals in the favorites!"
+         puts ""
+         puts "All meals are removed from favorites!"
          sleep(2)
          puts ""
          CLI.list_options
@@ -42,9 +43,10 @@ class User
    # handles full logic for returning and deleting favorite recipes
    def self.access_favorites
      if User.favorites.empty?
-         puts ""
          puts "Sorry #{User.name}, you have not saved any recipe so far!"
      else
+         puts ""
+         puts "Here are your favorites! Great choices, #{User.name}! :)"
          Recipe.select_recipe(User.favorites)
          puts ""
          puts "Do you want to keep your favorites?(y/n)"
