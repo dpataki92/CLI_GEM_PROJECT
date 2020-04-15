@@ -28,17 +28,15 @@ class CLI
         puts "  -ask us to recommend you a meal or even a full menu for the day"
         puts "  -save your favorite recipes and get back to them later"
         puts ""
-        puts "Press 'y' when you are ready!"
+        puts "Ready?(y/n)"
         input = gets.strip.downcase
         if input == 'y'
             puts ""
-            puts "Cool! We are getting you the most popular recipes on #{Time.new.strftime("%d of %B, %Y")}"
-            puts ""
-            puts "It may take a few seconds...."
+            puts "Cool! We got you the most popular simple recipes for #{Time.new.strftime("%d/%m/%Y")}"
             puts ""
         else
             puts ""
-            puts "Hmmm, it seems you did not type 'y'. If you are not in the mood, just type 'exit' after the menu is loaded!"
+            puts "Hmmm, it seems you did not type 'y'. If you are not in the mood, just type 'exit'!"
             puts ""
         end
     end

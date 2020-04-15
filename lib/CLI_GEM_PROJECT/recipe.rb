@@ -9,6 +9,8 @@ class Recipe
         dinner: nil
     }
 
+    @@lookups = []
+
     # custom readers for all/breakfast/lunch/dinner recipes
     def self.all
         @@all
@@ -77,16 +79,28 @@ class Recipe
         puts ""
     end
 
+    def self.check_if_already_seen(obj)
+        @@lookups.include?(obj)
+    end
+
     # finds and returns a recipe instance in a formatted way based on the list number input
     def self.return_recipe(list_return, input)
         if list_return.instance_of? Array
             obj = list_return[input.to_i - 1]
-            obj_updated = Scraper.scrape_extra_data(obj)
-            self.format_recipe(obj_updated)
+            if @@lookups.include?(obj)
+                self.format_recipe(@@lookups[@@lookups.index(obj)])
+            else
+                self.format_recipe(Scraper.scrape_extra_data(obj))
+                @@lookups << obj
+            end
         else
             obj = method(list_return).call[input.to_i - 1]
-            obj_updated = Scraper.scrape_extra_data(obj)
-            self.format_recipe(obj_updated)
+            if @@lookups.include?(obj)
+                self.format_recipe(@@lookups[@@lookups.index(obj)])
+            else
+                self.format_recipe(Scraper.scrape_extra_data(obj))
+                @@lookups << obj
+            end
         end
     end
 
