@@ -32,6 +32,7 @@ class Recipe
 
     # prints out lists in a numbered order irrespective of whether the input is a simple array or a method that returns an array
     def self.print_list(list_return)
+        puts ""
         if list_return.instance_of? Array
             list_return.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
         else
@@ -61,7 +62,7 @@ class Recipe
         puts ""
         puts "*** #{obj.name} ***"
         puts ""
-        puts "Average cook time is: #{obj.cook_time}"
+        puts "Average cook time is: #{obj.cook_time}" if obj.cook_time
         puts "Categories: #{obj.diet}" if obj.diet
         puts ""
         puts "INGREDIENTS:"
@@ -95,32 +96,31 @@ class Recipe
                 self.filter_and_select(course_list)
             else
                 Recipe.print_list(diet_filter)
+                puts ""
+                puts "- Type the number of the recipe you want to check out!"
+                puts "- Type 'm' if you want to return to the menu!"
+                response = gets.strip
+                if response == "m"
+                    CLI.list_options
+                elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
+                    Recipe.return_recipe(diet_filter, response)
+                    Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
+                else
+                    puts ""
+                    puts "Please provide valid input!"
+                    sleep(2)
+                    self.select_from_filtered_list(course_list, input)
+                end
             end
-
-        puts ""
-        puts "I. Type the number of the recipe you want to check out!"
-        puts "II. Type the 'm' if you want to return to the menu!"
-        response = gets.strip
-        if response == "m"
-            CLI.list_options
-        elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
-            Recipe.return_recipe(diet_filter, response)
-            Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
-        else
-            puts ""
-            puts "Please provide valid input!"
-            sleep(2)
-            self.select_from_filtered_list(course_list, input)
-        end
     end
 
     # handles logic for options after listing recipes based on course type: filter them or return - if filtered, select recipe or return - if selected, save it or return
     def self.filter_and_select(course_list)
         puts ""
-        puts "I. Type the number of the recipe you want to check out!"
-        puts "II. Type 'v' if you want to see only the vegetarian options!"
-        puts "III. Type 'g' if you want to see only the gluten-free options!"
-        puts "IV. Type 'm' if you want to return to the menu!"
+        puts "- Type the number of the recipe you want to check out!"
+        puts "- Type 'v' if you want to see only the vegetarian options!"
+        puts "- Type 'g' if you want to see only the gluten-free options!"
+        puts "- Type 'm' if you want to return to the menu!"
         
         input = gets.strip
         recipe = nil
@@ -146,15 +146,16 @@ class Recipe
 
     # saves the recipe or return to the previous list or main menu
     def self.save_or_return(recipe, list)
-        puts "Did you like this recipe? Type 'save' to save it to your favorites!"
-        puts "Do you want to return to the list? Type 'r'!"
-        puts "Do you want to go back to the menu? Type 'm'!"
+        puts "- Did you like this recipe? Type 'save' to save it to your favorites!"
+        puts "- Do you want to return to the list? Type 'r'!"
+        puts "- Do you want to go back to the menu? Type 'm'!"
         response = gets.strip
         if response == "save"
             User.save_favorite(recipe)
+            puts ""
             puts "It is saved!"
             puts ""
-            sleep(2)
+            sleep(1)
             self.select_recipe(list)
         elsif response == "r"
             self.select_recipe(list)
