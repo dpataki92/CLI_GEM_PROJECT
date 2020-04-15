@@ -43,6 +43,7 @@ class User
    # handles full logic for returning and deleting favorite recipes
    def self.access_favorites
      if User.favorites.empty?
+         puts ""
          puts "Sorry #{User.name}, you have not saved any recipe so far!"
      else
          puts ""

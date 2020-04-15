@@ -79,11 +79,7 @@ class Recipe
         puts ""
     end
 
-    def self.check_if_already_seen(obj)
-        @@lookups.include?(obj)
-    end
-
-    # finds and returns a recipe instance in a formatted way based on the list number input
+    # returns a recipe in a formatted way based on number input and saves it to lookups if it hasn't already been saved
     def self.return_recipe(list_return, input)
         if list_return.instance_of? Array
             obj = list_return[input.to_i - 1]

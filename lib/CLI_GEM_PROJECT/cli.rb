@@ -1,7 +1,7 @@
 
 # CLI controller
 class CLI
-    
+
     # controller method
     def self.call
      Scraper.scrape_recipes_from_index_page
@@ -21,7 +21,7 @@ class CLI
         puts "What's your name?"
         User.name = gets.strip
         puts ""
-        puts "Hello #{User.name}! By using SimpleMeal, you can:"
+        puts "Hello #{User.name}! Here you can:"
         puts ""
         puts "  -check out our most popular breakfast, lunch and dinner recipes"
         puts "  -search for vegetarian and gluten-free options"
