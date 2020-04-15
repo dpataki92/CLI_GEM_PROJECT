@@ -4,27 +4,12 @@ class CLI
     
     # controller method
     def self.call
-      async_await = CLI::CreateAsync.new  #provides access to the asynchronous methods in the CreateAsync class
-      async_await.async.save_all  #lets the scraper methods execute asynchronously while the rest of the code continues executing
-      self.greeting
-      async_await.await.options_and_menu  #delays the execution of the list_options and menu methods until the scraper methods finish executing
-      puts ""
-      puts "Thanks for using SimpleMeal!"
-    end
-
-    # includes the concurrent module and bundles up the scraper and CLI methods that have to be executed with async-await functionality
-    class CreateAsync
-        include Concurrent::Async
-        def save_all
-            Recipe.all[:breakfast] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/breakfast_and_brunch/")
-            Recipe.all[:lunch] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/lunch/")
-            Recipe.all[:dinner] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/dinner/")
-        end
-
-        def options_and_menu
-            CLI.list_options
-            CLI.menu
-        end
+     Scraper.scrape_recipes_from_index_page
+     self.greeting
+     CLI.list_options
+     CLI.menu
+     puts ""
+     puts "Thanks for using SimpleMeal!"
     end
 
     # greets user, saves name and provides summary
@@ -92,10 +77,6 @@ class CLI
             Recipe.meal_of_the_day
             when "7"
             Recipe.menu_of_the_day
-            else
-            puts ""
-            puts "Please provide valid input!"
-            puts ""
             end
         end
     end

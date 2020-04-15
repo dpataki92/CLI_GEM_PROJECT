@@ -80,9 +80,13 @@ class Recipe
     # finds and returns a recipe instance in a formatted way based on the list number input
     def self.return_recipe(list_return, input)
         if list_return.instance_of? Array
-            self.format_recipe(list_return[input.to_i - 1])
+            obj = list_return[input.to_i - 1]
+            obj_updated = Scraper.scrape_extra_data(obj)
+            self.format_recipe(obj_updated)
         else
-            self.format_recipe(method(list_return).call[input.to_i - 1])
+            obj = method(list_return).call[input.to_i - 1]
+            obj_updated = Scraper.scrape_extra_data(obj)
+            self.format_recipe(obj_updated)
         end
     end
 

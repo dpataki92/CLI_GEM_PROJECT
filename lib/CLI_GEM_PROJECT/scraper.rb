@@ -1,26 +1,37 @@
 class Scraper
 
-    # gets and assigns data to recipe instance
-    def self.scrape_recipe(link)
-        doc = Nokogiri::HTML(open("#{link}"))
-        recipe = Recipe.new
-        recipe.name = doc.css(".entry-title").text.strip
-        recipe.cook_time = doc.css(".cooktime").text.strip
-        recipe.diet = doc.css(".taxonomy-term.button-action span").select {|sp| sp.text == "Gluten-Free" || sp.text == "Vegetarian"}.collect {|el| el.text.downcase}.uniq.join(",")
-        recipe.ingredients = doc.css(".ingredient").collect {|ingredient| ingredient.text.strip}.reject {|el| el.empty?}
-        recipe.directions = doc.css(".entry-details.recipe-method.instructions div p").collect {|p| p.text.strip}.reject {|el| el.empty?}
-        recipe.url = "#{link}"
-        recipe
-    end
-
-    # gets and assigns data to multiple recipe instances using pages listing recipes based on course type
     def self.scrape_recipes_from_course_page(link)
         doc = Nokogiri::HTML(open("#{link}"))
-        doc.css(".grd-tile-detail .grd-title-link a").collect do |a|
-            link = a["href"] 
-            recipe = self.scrape_recipe(link)
+        arr = doc.css(".grd-tile-detail").collect do |node|
+            recipe = Recipe.new
+            recipe.name = node.css(".grd-title-link a span").text.strip
+            recipe.diet = node.css(".sum-item.sum-food-type").text.downcase.strip
+            recipe.url = node.css(".grd-title-link a")[0]["href"]
             recipe
         end
+
+        if link.include?("breakfast")
+            Recipe.all[:breakfast] = arr
+        elsif link.include?("lunch")
+            Recipe.all[:lunch] = arr
+        elsif link.include?("dinner")
+            Recipe.all[:dinner] = arr
+        end
+
+    end
+
+    def self.scrape_recipes_from_index_page
+        doc = Nokogiri::HTML(open("https://www.simplyrecipes.com/index/"))
+        links = doc.css("a").select {|a| a.text.tr("0-9", "") == "Breakfast and Brunch " || a.text.tr("0-9", "") == "Lunch " || a.text.tr("0-9", "") == "Dinner "}.collect {|n| n["href"]}
+        links.each {|link| self.scrape_recipes_from_course_page(link)}
+    end
+
+    def self.scrape_extra_data(recipe)
+        doc = Nokogiri::HTML(open("#{recipe.url}"))
+        recipe.cook_time = doc.css(".cooktime").text.strip
+        recipe.ingredients = doc.css(".ingredient").collect {|ingredient| ingredient.text.strip}.reject {|el| el.empty?}
+        recipe.directions = doc.css(".entry-details.recipe-method.instructions div p").collect {|p| p.text.strip}.reject {|el| el.empty?}
+        recipe
     end
 
 end
