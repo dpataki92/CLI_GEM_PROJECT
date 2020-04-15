@@ -1,27 +1,15 @@
 class Recipe
-
+    # readers and writers for the recipe instances
     attr_accessor :name, :diet, :cook_time, :ingredients, :directions, :url
 
+    # stores the recipe objects based on course type
     @@all = {
         breakfast: nil,
         lunch: nil,
         dinner: nil
     }
-    
-    class CreateAsync
-        include Concurrent::Async
-        def save_all
-            Recipe.all[:breakfast] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/breakfast_and_brunch/")
-            Recipe.all[:lunch] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/lunch/")
-            Recipe.all[:dinner] = Scraper.create_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/dinner/")
-        end
 
-        def options_and_menu
-            CLI.list_options
-            CLI.menu
-        end
-    end
-
+    # custom readers for all/breakfast/lunch/dinner recipes
     def self.all
         @@all
     end
@@ -42,6 +30,7 @@ class Recipe
         self.all[:dinner]
     end
 
+    # prints out lists in a numbered order irrespective of whether the input is a simple array or a method that returns an array
     def self.print_list(list_return)
         if list_return.instance_of? Array
             list_return.each_with_index {|el, i| puts "#{i+1}. #{el.name}"}
@@ -50,6 +39,7 @@ class Recipe
         end
     end
 
+    # finder method for selecting only vegetarian or only glute-free emals from an array /method that returns an array
     def self.find_by_diet(list_return, input)
         if list_return.instance_of? Array
             if input == "v"
@@ -66,6 +56,7 @@ class Recipe
         end
     end
 
+    # outputs data of a recipe instance in a formatted way
     def self.format_recipe(obj)
         puts ""
         puts "*** #{obj.name} ***"
@@ -85,6 +76,7 @@ class Recipe
         puts ""
     end
 
+    # finds and returns a recipe instance in a formatted way based on the list number input
     def self.return_recipe(list_return, input)
         if list_return.instance_of? Array
             self.format_recipe(list_return[input.to_i - 1])
@@ -93,12 +85,36 @@ class Recipe
         end
     end
 
-    def self.select_recipe(course_list)
-        course_list = method(course_list).call if !course_list.instance_of? Array
-        self.print_list(course_list)
-        self.filter_and_select(course_list)
+    # handles logic for options after a list is filtered based on diet - if no meals from the selected diet, inform user - otherwise print filtered list and return selected recipe
+    def self.select_from_filtered_list(course_list, input)
+        diet_filter = Recipe.find_by_diet(course_list, input)
+            if diet_filter.empty?
+                puts ""
+                puts "Sorry, this list does not contain any meals from the selected category :("
+                sleep(2)
+                self.filter_and_select(course_list)
+            else
+                Recipe.print_list(diet_filter)
+            end
+
+        puts ""
+        puts "I. Type the number of the recipe you want to check out!"
+        puts "II. Type the 'm' if you want to return to the menu!"
+        response = gets.strip
+        if response == "m"
+            CLI.list_options
+        elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
+            Recipe.return_recipe(diet_filter, response)
+            Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
+        else
+            puts ""
+            puts "Please provide valid input!"
+            sleep(2)
+            self.select_from_filtered_list(course_list, input)
+        end
     end
-    
+
+    # handles logic for options after listing recipes based on course type: filter them or return - if filtered, select recipe or return - if selected, save it or return
     def self.filter_and_select(course_list)
         puts ""
         puts "I. Type the number of the recipe you want to check out!"
@@ -128,38 +144,7 @@ class Recipe
         end
     end
 
-    def self.select_from_filtered_list(course_list, input)
-        diet_filter = Recipe.find_by_diet(course_list, input)
-            if diet_filter.empty?
-                puts ""
-                puts "Sorry, this list does not contain any meals from the selected category :("
-                sleep(2)
-                self.filter_and_select(course_list)
-            else
-                Recipe.print_list(diet_filter)
-            end
-
-        puts ""
-        puts "I. Type the number of the recipe you want to check out!"
-        puts "II. Type the 'm' if you want to return to the menu!"
-        response = gets.strip
-        if response == "m"
-            CLI.list_options
-        elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
-            Recipe.return_recipe(diet_filter, response)
-            Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
-        else
-            puts ""
-            puts "Please provide valid input!"
-            sleep(2)
-            self.select_from_filtered_list(course_list, input)
-        end
-    end
-
-    def self.favorites
-        User.favorites
-    end
-
+    # saves the recipe or return to the previous list or main menu
     def self.save_or_return(recipe, list)
         puts "Did you like this recipe? Type 'save' to save it to your favorites!"
         puts "Do you want to return to the list? Type 'r'!"
@@ -183,6 +168,14 @@ class Recipe
         end
     end
 
+    # handles full logic of selecting a specific recipe: creating list based on course type - filter list based on diet - return recipe and save it if user chooses to
+    def self.select_recipe(course_list)
+        course_list = method(course_list).call if !course_list.instance_of? Array
+        self.print_list(course_list)
+        self.filter_and_select(course_list)
+    end
+
+    # randomly selects a meal from all recipes and returns the recipe
     def self.meal_of_the_day
         arr = self.return_all
         i = rand(0...arr.length)
@@ -190,6 +183,7 @@ class Recipe
         self.save_or_return(arr[i], arr)
     end
 
+    # generates a daily menu with breakfast, lunch and dinner recipes
     def self.menu_of_the_day
         breakfast = self.all[:breakfast][rand(0...self.all[:breakfast].length)]
         lunch = self.all[:lunch][rand(0...self.all[:lunch].length)]

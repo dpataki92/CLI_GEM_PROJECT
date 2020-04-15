@@ -1,6 +1,7 @@
 class Scraper
 
-    def self.create_recipe(link)
+    # gets and assigns data to recipe instance
+    def self.scrape_recipe(link)
         doc = Nokogiri::HTML(open("#{link}"))
         recipe = Recipe.new
         recipe.name = doc.css(".entry-title").text.strip
@@ -12,11 +13,12 @@ class Scraper
         recipe
     end
 
-    def self.create_recipes_from_course_page(link)
+    # gets and assigns data to multiple recipe instances using pages listing recipes based on course type
+    def self.scrape_recipes_from_course_page(link)
         doc = Nokogiri::HTML(open("#{link}"))
         doc.css(".grd-tile-detail .grd-title-link a").collect do |a|
             link = a["href"] 
-            recipe = self.create_recipe(link)
+            recipe = self.scrape_recipe(link)
             recipe
         end
     end

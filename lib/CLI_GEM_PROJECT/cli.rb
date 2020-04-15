@@ -1,13 +1,30 @@
-#Our CLI controller
+
+# CLI controller
 class CLI
-    #controller method
+    
+    # controller method
     def self.call
-      async_await = Recipe::CreateAsync.new
-      async_await.async.save_all
+      async_await = CLI::CreateAsync.new  #provides access to the asynchronous methods in the CreateAsync class
+      async_await.async.save_all  #lets the scraper methods execute asynchronously while the rest of the code continues executing
       self.greeting
-      async_await.await.options_and_menu
+      async_await.await.options_and_menu  #delays the execution of the list_options and menu methods until the scraper methods finish executing
       puts ""
       puts "Thanks for using SimpleMeal!"
+    end
+
+    # includes the concurrent module and bundles up the scraper and CLI methods that have to be executed with async-await functionality
+    class CreateAsync
+        include Concurrent::Async
+        def save_all
+            Recipe.all[:breakfast] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/breakfast_and_brunch/")
+            Recipe.all[:lunch] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/lunch/")
+            Recipe.all[:dinner] = Scraper.scrape_recipes_from_course_page("https://www.simplyrecipes.com/recipes/course/dinner/")
+        end
+
+        def options_and_menu
+            CLI.list_options
+            CLI.menu
+        end
     end
 
     # greets user, saves name and provides summary
@@ -20,12 +37,13 @@ class CLI
         User.name = gets.strip
         puts ""
         puts "Hello #{User.name}! By using SimpleMeal, you can:"
+        puts ""
         puts "  -check out our most popular breakfast, lunch and dinner recipes"
         puts "  -search for vegetarian and gluten-free options"
         puts "  -ask us to recommend you a meal or even a full menu for the day"
-        puts "  -save your favorite recipes and get back to them later once you have finished searching"
+        puts "  -save your favorite recipes and get back to them later"
         puts ""
-        puts "Press 'y' if you are ready!"
+        puts "Press 'y' when you are ready!"
         input = gets.strip.downcase
         if input == 'y'
             puts ""
@@ -35,13 +53,13 @@ class CLI
             puts ""
         else
             puts ""
-            puts "Maybe next time! Now just type 'exit'!"
+            puts "Hmmm, it seems you did not type 'y'. If you are not in the mood, just type 'exit' after the menu is loaded!"
             puts ""
         end
     end
 
 
-
+    # prints menu
     def self.list_options
         puts "1. All recipes"
         puts "2. Breakfast recipes"
@@ -52,6 +70,7 @@ class CLI
         puts "7. Menu of the day"
     end
  
+    # handles logic for different menu options
     def self.menu
         input = nil
         while input != "exit"
@@ -76,8 +95,5 @@ class CLI
             end
         end
     end
-
-
-
 
 end 
