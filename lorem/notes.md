@@ -1,6 +1,6 @@
-Blog post - My CLI project - SimpleMeal CLI
+CLI project - SimpleMeal CLI // Flatiron School - Portfolio Project 1
 
-My first portfolio project 
+As my first portfolio project, I built a CLI that allows users to check out  scrapes from the simplerecipes.com website 
 
 User story:
 

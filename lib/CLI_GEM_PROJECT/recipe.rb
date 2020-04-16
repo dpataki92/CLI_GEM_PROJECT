@@ -194,6 +194,8 @@ class Recipe
     def self.meal_of_the_day
         arr = self.return_all
         i = rand(0...arr.length)
+        puts "We recommend you to try out this recipe! Have fun!"
+        puts ""
         self.format_recipe(Scraper.scrape_extra_data(arr[i]))
         self.save_or_return(arr[i], arr)
     end
