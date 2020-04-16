@@ -14,7 +14,7 @@ class User
 
    # based on input, deletes recipes from favorites or clear the whole array
    def self.delete_favorites
-      Recipe.print_list(User.favorites)
+      Recipe.print_list(self.favorites)
       puts ""
       
       puts "- Type the number of the meal you want to delete"
@@ -22,15 +22,15 @@ class User
       response = gets.strip
 
       if response == "clear"
-         User.favorites.clear
+         self.favorites.clear
          puts ""
          puts "All meals are removed from favorites!"
          sleep(2)
          puts ""
          CLI.list_options
-      elsif response.count("a-zA-Z") == 0 && response.to_i <= User.favorites.length
+      elsif response.count("a-zA-Z") == 0 && response.to_i <= self.favorites.length
          puts "The meal '#{User.favorites[response.to_i-1].name}' has been removed from favorites!"
-         User.favorites.delete_at(response.to_i-1)
+         self.favorites.delete_at(response.to_i-1)
          sleep(2)
          CLI.list_options
       else
@@ -42,13 +42,13 @@ class User
 
    # handles full logic for returning and deleting favorite recipes
    def self.access_favorites
-     if User.favorites.empty?
+     if self.favorites.empty?
          puts ""
-         puts "Sorry #{User.name}, you have not saved any recipe so far!"
+         puts "Sorry #{self.name}, you have not saved any recipe so far!"
      else
          puts ""
-         puts "Here are your favorites! Great choices, #{User.name}! :)"
-         Recipe.select_recipe(User.favorites)
+         puts "Here are your favorites! Great choices, #{self.name}! :)"
+         Recipe.select_recipe(self.favorites)
          puts ""
          puts "Do you want to keep your favorites?(y/n)"
          input = gets.strip

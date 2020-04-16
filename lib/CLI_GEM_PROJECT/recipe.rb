@@ -102,14 +102,14 @@ class Recipe
 
     # handles logic for options after a list is filtered based on diet - if no meals from the selected diet, inform user - otherwise print filtered list and return selected recipe
     def self.select_from_filtered_list(course_list, input)
-        diet_filter = Recipe.find_by_diet(course_list, input)
+        diet_filter = self.find_by_diet(course_list, input)
             if diet_filter.empty?
                 puts ""
                 puts "Sorry, this list does not contain any meals from the selected category :("
                 sleep(2)
                 self.filter_and_select(course_list)
             else
-                Recipe.print_list(diet_filter)
+                self.print_list(diet_filter)
                 puts ""
                 puts "- Type the number of the recipe you want to check out!"
                 puts "- Type 'm' if you want to return to the menu!"
@@ -117,8 +117,8 @@ class Recipe
                 if response == "m"
                     CLI.list_options
                 elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
-                    Recipe.return_recipe(diet_filter, response)
-                    Recipe.save_or_return(diet_filter[response.to_i-1], diet_filter)
+                    self.return_recipe(diet_filter, response)
+                    self.save_or_return(diet_filter[response.to_i-1], diet_filter)
                 else
                     puts ""
                     puts "Please provide valid input!"
@@ -143,7 +143,7 @@ class Recipe
             self.select_from_filtered_list(course_list, input)
         elsif input.count("a-z") == 0 && input.to_i <= course_list.length
             recipe = course_list[input.to_i-1] 
-            Recipe.return_recipe(course_list, input)
+            self.return_recipe(course_list, input)
         elsif input == "m"
             CLI.list_options
         else

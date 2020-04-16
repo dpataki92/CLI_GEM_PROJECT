@@ -6,8 +6,8 @@ class CLI
     def self.call
      Scraper.scrape_recipes_from_index_page
      self.greeting
-     CLI.list_options
-     CLI.menu
+     self.list_options
+     self.menu
      puts ""
      puts "Thanks for using SimpleMeal!"
     end
