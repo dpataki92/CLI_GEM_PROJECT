@@ -116,7 +116,7 @@ class Recipe
                 response = gets.strip
                 if response == "m"
                     CLI.list_options
-                elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
+                elsif response.count("a-zA-Z") == 0 && response.to_i <= diet_filter.length
                     self.return_recipe(diet_filter, response)
                     self.save_or_return(diet_filter[response.to_i-1], diet_filter)
                 else
@@ -194,8 +194,8 @@ class Recipe
     def self.meal_of_the_day
         arr = self.return_all
         i = rand(0...arr.length)
-        puts "We recommend you to try out this recipe! Have fun!"
         puts ""
+        puts "We recommend you to try out this recipe! Have fun!"
         self.format_recipe(Scraper.scrape_extra_data(arr[i]))
         self.save_or_return(arr[i], arr)
     end
