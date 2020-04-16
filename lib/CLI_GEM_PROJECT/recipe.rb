@@ -118,7 +118,7 @@ class Recipe
                     CLI.list_options
                 elsif response.count("a-z") == 0 && response.to_i <= diet_filter.length
                     Recipe.return_recipe(diet_filter, response)
-                    Recipe.save_or_return(diet_filter[response.to_i], diet_filter)
+                    Recipe.save_or_return(diet_filter[response.to_i-1], diet_filter)
                 else
                     puts ""
                     puts "Please provide valid input!"
@@ -165,7 +165,7 @@ class Recipe
         puts "- Do you want to go back to the menu? Type 'm'!"
         response = gets.strip
         if response == "save"
-            User.save_favorite(recipe)
+            User.save_favorite(Scraper.scrape_extra_data(recipe))
             puts ""
             puts "It is saved!"
             puts ""
@@ -194,7 +194,7 @@ class Recipe
     def self.meal_of_the_day
         arr = self.return_all
         i = rand(0...arr.length)
-        self.format_recipe(arr[i])
+        self.format_recipe(Scraper.scrape_extra_data(arr[i]))
         self.save_or_return(arr[i], arr)
     end
 
