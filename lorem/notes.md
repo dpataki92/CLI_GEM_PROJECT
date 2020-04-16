@@ -1,4 +1,6 @@
-Blog post - SimpleMeal CLI
+Blog post - My CLI project - SimpleMeal CLI
+
+My first portfolio project 
 
 User story:
 
